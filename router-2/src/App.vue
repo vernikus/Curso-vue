@@ -16,15 +16,14 @@ import { RouterLink, RouterView } from "vue-router";
         PokeAPI con Vue
       </RouterLink>
       <div>
-        <RouterLink class="btn btn-outline-primary " to="/">Home</RouterLink>
-        <RouterLink class="btn btn-outline-primary " to="/pokemons">Poke Api</RouterLink>
+        <RouterLink class="btn btn-outline-primary me-2" to="/">Home</RouterLink>
+        <RouterLink class="btn btn-outline-primary me-2" to="/pokemons">Poke Api</RouterLink>
+        <RouterLink class="btn btn-outline-primary" to="/favorite">Favorites pokemons</RouterLink>
       </div>
     </div>
   </nav>
-  <div class="container"> <!--En boostrap container se unsa para dar un espaciado-->
+  <main class="container"> 
     <RouterView />
-
-  </div>
-  <!--Lo unico que cambia en el template es el RouterView ya que es lo unico dinamico -->
+  </main>
 </template>
 

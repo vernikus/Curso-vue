@@ -22,7 +22,6 @@ getData("https://pokeapi.co/api/v2/pokemon");
 </script>
 
 <template>
-  <main>
     <section>
       <h1>Pokemons</h1>
       <p v-if="loading">Loading information ....</p>
@@ -41,5 +40,4 @@ getData("https://pokeapi.co/api/v2/pokemon");
         <button :disabled="!data.next" class="btn btn-primary" @click="getData(data.next)">Next</button>
       </div>
     </section>
-  </main>
 </template>

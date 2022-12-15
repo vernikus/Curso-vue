@@ -8,9 +8,9 @@ const { count, double } = storeToRefs(useCounter); //Las referencias reactivas y
 </script>
 
 <template>
-  <main>
+  <section>
     <h1>Home counter : {{ count }}</h1>
     <h2>Double : {{ double }}</h2>
     <button @click="increment">Increment</button>
-  </main>
+  </section>
 </template>
