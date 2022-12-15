@@ -1,43 +1,46 @@
 <script setup>
-// import axios from "axios";
-// import { ref } from "vue";
-import {RouterLink} from 'vue-router'
-import {useGetData} from '@/composables/getData.js'
+import { RouterLink } from "vue-router";
+import { useGetData } from "@/composables/getData.js";
 
-// const pokemons = ref("[]");
 
-const {data,getData,loading,errorData} = useGetData()
-// const getData = async () => {
-//   try {
-//     const { data } = await axios.get("https://pokeapi.co/api/v2/pokemon"); //destructuramos data, se crea una constante, se tiene que tener invocar a la propiedad del objeto, es decir, el nombre especifico de la propiedad a la que se quiere acceder
-//     // console.log(data);
-//     // console.log(data.results);
-//     pokemons.value = data.results //igualamos los pokemons al array
-//   } catch (err) {
-//     console.log(err);
-//   }
-// };
+const { data, getData, loading, errorData } = useGetData();
+
 getData("https://pokeapi.co/api/v2/pokemon");
-
 </script>
 
 <template>
-    <section>
-      <h1>Pokemons</h1>
-      <p v-if="loading">Loading information ....</p>
-      <div class="alert alert-danger" v-if="errorData">{{errorData}}</div> <!--Asi es como se pueden pintar los errores, se manejan en el composable-->
-      <div v-if="data">
-        <ul>
-          <li 
+  <section>
+    <h1>Pokemons</h1>
+    <p v-if="loading">Loading information ....</p>
+    <div class="alert alert-danger" v-if="errorData">{{ errorData }}</div>
+    <div v-if="data">
+      <ul class="list-group">
+        <li
+          class="list-group-item d-flex justify-content-center text-uppercase"
           v-for="pokemon in data.results"
-          :key='pokemon.name'
-          
-          >
-          <RouterLink :to="`/pokemons/${pokemon.name}`">{{pokemon.name}}</RouterLink> <!--Se convierten a rutas dinamicas todos los resultados conel RouterLink-->
-          </li>
-        </ul>
-        <button :disabled="!data.previous" class="btn btn-warning me-2" @click="getData(data.previous)">Previus</button>
-        <button :disabled="!data.next" class="btn btn-primary" @click="getData(data.next)">Next</button>
+          :key="pokemon.name"
+        >
+          <RouterLink class="btn btn-outline-primary w-25 " :to="`/pokemons/${pokemon.name}`">{{
+            pokemon.name
+          }}</RouterLink>
+        </li>
+      </ul>
+      <div class="d-flex justify-content-between">
+        <button
+          :disabled="!data.previous"
+          class="btn btn-primary mt-5 w-25 "
+          @click="getData(data.previous)"
+        >
+          Previus
+        </button>
+        <button
+          :disabled="!data.next"
+          class="btn btn-primary mt-5 w-25"
+          @click="getData(data.next)"
+        >
+          Next
+        </button>
       </div>
-    </section>
+    </div>
+  </section>
 </template>

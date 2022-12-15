@@ -18,15 +18,15 @@ const {add,findPokemon} = useFavorites
 </script>
 
 <template>
-        <section>
+        <section class="d-flex flex-column align-items-center">
             <p v-if="loading">Loading information ....</p>
             <div class="alert alert-danger" v-if="errorData">{{errorData}}</div>
-            <div v-if="data">
-                <h1>Name: {{$route.params.name}}</h1> 
+            <div v-if="data" class="d-flex flex-column w-25" >
+                <h1 class="text-uppercase">Name: {{$route.params.name}}</h1> 
                 <img :src="data.sprites?.front_default" alt=""> 
                 <button class="btn btn-primary " @click="add(data)" :disabled="findPokemon(data.name)" >Add favorites pokemons</button>
             </div>
             <h2 v-else>No existe el pokemon</h2>
-            <button @click="back" class="btn btn-outline-primary">Regresar</button>
+            <button @click="back" class="btn btn-outline-primary mt-2 w-25">Regresar</button>
         </section>
 </template>
