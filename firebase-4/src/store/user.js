@@ -1,6 +1,7 @@
 import {ref} from 'vue'
 import {defineStore} from 'pinia'
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from 'firebase/auth'
+// Importaciones de auth
+import { createUserWithEmailAndPassword, onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'firebase/auth'
 import {auth} from '../firebaseConfig.js'
 import router from '../router/main'
 
@@ -9,6 +10,7 @@ export const userStore = defineStore('counter',()=>{
 
     const userData = ref(null);
     const loadinUser = ref(false); //Creamo un loader para poder deshabilitar los botones
+    const loader = ref(true)   // Loader para cuando cargue los datos
     // Registramos a un usuario con correo y contraseña
     const  registerUser = async (email,password) => {
         try{
@@ -47,11 +49,28 @@ export const userStore = defineStore('counter',()=>{
             console.log(err)
         }
     }
+    //
+    const currentUser = () =>{
+        // Retornamos una promesa para que despues se pueda manejar con async await
+        return new Promise((res,rej) =>{
+            // En la documentacion se aconseja que onAuthStateChanged sea inicializado con una variable unsuscribe
+            const unsuscribe = onAuthStateChanged(auth,(user) =>{
+                if(user){
+                    userData.value = {email: user.email, uid : user.uid}
+                }else userData.value = null
+                res(user)
+            }, (e) => rej(e))
+            // Llamamos a la funcion
+            unsuscribe()
+        })
+    }
     return{
         loadinUser,
         userData,
+        loader,
         registerUser,
         loginUser,
-        logOutUser
+        logOutUser,
+        currentUser
     };
 });     
