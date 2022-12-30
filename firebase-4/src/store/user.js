@@ -4,6 +4,7 @@ import {defineStore} from 'pinia'
 import { createUserWithEmailAndPassword, onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'firebase/auth'
 import {auth} from '../firebaseConfig.js'
 import router from '../router/main'
+import { useDataBase } from './dataBase.js' //Para poder resetear una store en otro store, se tiene que importar store1 en store2
 
 
 export const userStore = defineStore('counter',()=>{
@@ -41,6 +42,9 @@ export const userStore = defineStore('counter',()=>{
     }
     //Cerramos sesion
     const logOutUser = async () =>{
+        const dataBaseStore = useDataBase() //Inicializamos store1
+        dataBaseStore.$reset() //reseteamos la store1
+        console.log(dataBaseStore.documents)
         try {
             await signOut(auth)
             router.push('/login')
@@ -57,7 +61,11 @@ export const userStore = defineStore('counter',()=>{
             const unsuscribe = onAuthStateChanged(auth,(user) =>{
                 if(user){
                     userData.value = {email: user.email, uid : user.uid}
-                }else userData.value = null
+                }else{
+                    userData.value = null
+                    // const dataBaseStore = useDataBase() 
+                    // dataBaseStore.$reset() 
+                }
                 res(user)
             }, (e) => rej(e))
             // Llamamos a la funcion
