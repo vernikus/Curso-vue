@@ -63,8 +63,8 @@ export const userStore = defineStore('counter',()=>{
                     userData.value = {email: user.email, uid : user.uid}
                 }else{
                     userData.value = null
-                    // const dataBaseStore = useDataBase() 
-                    // dataBaseStore.$reset() 
+                    const dataBaseStore = useDataBase() 
+                    dataBaseStore.$reset() 
                 }
                 res(user)
             }, (e) => rej(e))

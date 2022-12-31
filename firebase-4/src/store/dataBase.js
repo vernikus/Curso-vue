@@ -1,9 +1,10 @@
 import { ref } from "vue";
 import { defineStore , createPinia} from "pinia";
 // importaciones para poder traer la base de datos
-import { collection, getDocs, query, where } from "firebase/firestore/lite";
+import { addDoc, collection, deleteDoc, doc, getDoc, getDocs, query, where } from "firebase/firestore/lite";
 import { db,auth } from "../firebaseConfig";
 import storeReset from "./resetStore.js";
+import { nanoid } from "nanoid"; //importamos nanoid = libreria que genera un string aleatorio
 
 export const useDataBase = defineStore("dataBase", () => {
   const documents = ref([]);
@@ -31,10 +32,54 @@ export const useDataBase = defineStore("dataBase", () => {
       loadingDocuments.value = false
     }
   };
+  //solicitud a la base da datos
+  const addUrl = async (name) =>{
+    try {
+      const objectDoc ={
+        name:name,
+        short: nanoid(6), //generamos un string aleatorio con 6 caracteres,
+        user : auth.currentUser.uid
+      }
+      // addDoc es el meotodo para agregar documentos a la base de datos addDoc(recibe el collection(db,'nombre de la coleccion en fireStore'),{objeto en cuestion})
+      const getRef = await addDoc (collection(db,'urls'),objectDoc)
+      documents.value.push({
+        ...objectDoc,
+        id: getRef.id
+      })
+    } catch (error) {
+      console.log(error)
+    }finally{
+
+    }
+  }
+  const deleteUrl = async (id) =>{
+    try {
+      //doc se utiliza para obtener una referencia tiene 3 parametreo doc(db,'coellection de datos de fyrestore',id)
+      const docRef =  doc(db,'urls',id);
+      const docSnap = await getDoc(docRef)
+      //eliminamos el archivo
+      await deleteDoc(docRef)
+      // Validacion para que solo se puedan borrar archivos creados por el mismo usuario
+      if(!docSnap.exists()){
+        throw new Error('No exist docSnap')
+      }else if(docSnap.data().user !== auth.currentUser.uid){
+        throw new Error('No exist doc')
+      }
+      //filramos el array de documentos para solo pintar los que se quedaton sin eliminar
+      documents.value = documents.value.filter(item => item.id !== id)
+      console.log(documents.value)
+    } catch (error) {
+      console.log(error)
+    }finally{
+
+    }
+  }
   return {
     documents,
     getUrls,
-    loadingDocuments
+    loadingDocuments,
+    addUrl,
+    deleteUrl
   };
 });
 const store = createPinia();
