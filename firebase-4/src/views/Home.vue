@@ -3,6 +3,7 @@ import {userStore} from '@/store/user.js'
 import { storeToRefs } from 'pinia';
 import { useDataBase } from '@/store/dataBase';
 import { ref } from 'vue';
+import { useRouter } from 'vue-router';
 
 const user = userStore();
 const {userData} = storeToRefs(user);
@@ -15,7 +16,7 @@ const handelSubmit = () =>{
     //validacion de la ur.
     addUrl(url.value)
 }
-
+const router = useRouter()
 
 getUrls()
 </script>
@@ -39,6 +40,7 @@ getUrls()
                 {{ item.short }}
                 {{ item.id }} <br>
                 <button @click="deleteUrl(item.id)">Deleted</button>
+                <button @click="router.push(`/edit/${item.id}`)">Edit</button>
             </li>
         </ul>
     </section>

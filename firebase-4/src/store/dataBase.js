@@ -1,7 +1,7 @@
 import { ref } from "vue";
 import { defineStore , createPinia} from "pinia";
 // importaciones para poder traer la base de datos
-import { addDoc, collection, deleteDoc, doc, getDoc, getDocs, query, where } from "firebase/firestore/lite";
+import { addDoc, collection, deleteDoc, doc, getDoc, getDocs, query, updateDoc, where } from "firebase/firestore/lite";
 import { db,auth } from "../firebaseConfig";
 import storeReset from "./resetStore.js";
 import { nanoid } from "nanoid"; //importamos nanoid = libreria que genera un string aleatorio
@@ -74,12 +74,51 @@ export const useDataBase = defineStore("dataBase", () => {
 
     }
   }
+  const readUrl = async (id) =>{
+    try {
+      const docRef = doc(db,'urls',id)
+      const docSnap = await getDoc(docRef)
+      
+      if(!docSnap.exists()){
+        throw new Error('No exist docSnap')
+      }else 
+      if(docSnap.data().user !== auth.currentUser.uid){
+        throw new Error('No exist doc')
+      }
+      return docSnap.data().name
+    } catch (error) {
+      console.log(error)
+    }
+  }
+  const updateUrl = async (id,name) =>{
+    try {
+      const docRef = doc(db,'urls',id)
+      const docSnap = await getDoc(docRef)
+      
+      if(!docSnap.exists()){
+        throw new Error('No exist docSnap')
+      }else 
+      if(docSnap.data().user !== auth.currentUser.uid){
+        throw new Error('No exist doc')
+      }
+      await updateDoc(docRef,{
+        name : name
+      });
+      documents.value = documents.value.map((item) => item.id === id ? ({...item, name: name}) : item)
+    } catch (error) {
+      console.log(error)
+    }finally{
+
+    }
+  }
   return {
     documents,
     getUrls,
     loadingDocuments,
     addUrl,
-    deleteUrl
+    deleteUrl,
+    readUrl,
+    updateUrl
   };
 });
 const store = createPinia();
