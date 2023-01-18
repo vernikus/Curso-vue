@@ -1,28 +1,50 @@
 <script setup>
-import {RouterLink,RouterView} from 'vue-router'
-import { userStore } from './store/user'; 
-import { storeToRefs } from 'pinia';
-const user = userStore()
-const {logOutUser} = userStore()
-const {userData,loader} = storeToRefs(user)
+import { RouterLink, RouterView, useRoute } from "vue-router";
+import { userStore } from "./store/user";
+import { storeToRefs } from "pinia";
+import { ref,watch} from 'vue'
+const user = userStore();
+const { logOutUser } = userStore();
+const { userData, loader } = storeToRefs(user);
+const route = useRoute()
+const selectedKeys = ref([])
+
+
+// watch recibe como primer parametro una funcion de observador con el dato del cual se quiere estar al pendiente cuento este cambie
+watch(() => route.name, () => {
+  selectedKeys.value = [route.name]
+})
 </script>
 
 <template>
   <!-- Si el lodaer es verdadero se mostrara el nav y el router-view -->
-  <nav class="text-center" v-if="loader">
-    <h1>App Firebase </h1>
-    <!-- Segun si la data existe o no, es decir si el usuario esta logeado o no , se le pintaran los diferentes bonotes -->
-    <RouterLink class="btn btn-outline-primary me-2" to='/' v-if="userData">Home</RouterLink>
-    <RouterLink class="btn btn-outline-primary me-2" to='/register' v-if="!userData">Register</RouterLink>
-    <RouterLink class="btn btn-outline-primary me-2" to='/login' v-if="!userData">Login</RouterLink>
-    <button class="btn btn-outline-danger" @click="logOutUser" v-if="userData">Logout</button> <!--Creamo el botton para salir de la sesion-->
-  </nav>
-  <div v-else class="d-flex justify-content-center mt-5" >
-    <div class="spinner-border" role="status">
-      <span class="visually-hidden">Loading...</span>
-    </div>
-  </div>
-  <main v-if="loader">
-    <router-view class="text-center"></router-view>
-  </main>
+  <a-layout>
+    <a-layout-header v-if="loader"> 
+      <a-menu v-model:selectedKeys="selectedKeys"
+        theme="dark"
+        mode="horizontal" 
+        :style="{ lineHeight: '64px' }">
+        <a-menu-item v-if="userData" key="home">
+          <RouterLink type="primary" to="/" >Home</RouterLink>
+        </a-menu-item>
+        <a-menu-item  v-if="!userData" key="register">
+          <RouterLink type="primary" to="/register">Register</RouterLink>
+        </a-menu-item>
+        <a-menu-item v-if="!userData" key="login">
+          <RouterLink type="primary" to="/login" >Login</RouterLink>
+        </a-menu-item>
+        <a-menu-item type="danger" @click="logOutUser" v-if="userData" key="logout">Logout</a-menu-item>
+      </a-menu>
+    </a-layout-header>
+    <a-layout-content v-else  style="padding: 0 50px">
+      <div class="example" style="text-aling:center">
+        <a-spin />
+      </div>
+    </a-layout-content>
+    
+    <a-layout-content v-if="loader"   style="padding: 0 50px" >
+      <router-view :style="{ background: '#fff', padding: '24px', minHeight: '280px' }"></router-view>
+    </a-layout-content>
+
+  </a-layout>
 </template>

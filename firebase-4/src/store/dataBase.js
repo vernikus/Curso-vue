@@ -5,14 +5,15 @@ import { addDoc, collection, deleteDoc, doc, getDoc, getDocs, query, updateDoc, 
 import { db,auth } from "../firebaseConfig";
 import storeReset from "./resetStore.js";
 import { nanoid } from "nanoid"; //importamos nanoid = libreria que genera un string aleatorio
+import router from "../router/main";
 
 export const useDataBase = defineStore("dataBase", () => {
   const documents = ref([]);
   const loadingDocuments = ref(false) //Creamos un loading para poner un spinner
   const getUrls = async () => {//Si el array esta vacio o ya tiene alguna informacion 
-    // if(documents.value.length == !0){
-    //   return;
-    // } 
+    if(documents.value.length !== 0){
+      return;
+    } 
     loadingDocuments.value = true
     try {
       // La documentacion recomienda, incializar una variable 'q', la cual llama a 'querry', la cual tiene el parametro 'colecction' , el cual tiene dos parametros(db,'nombre de la data base')
@@ -20,16 +21,17 @@ export const useDataBase = defineStore("dataBase", () => {
       // Inicializamos getDocs, la cual recibe la query, la cual al hacer la peticion se tarda en traer los datos
       const querySnapshot = await getDocs(q)
       querySnapshot.forEach(doc => {
-        console.log(doc.id, doc.data())
         documents.value.push({
-            id: doc.id,
-            ...doc.data()
-        })
-      })
+          id: doc.id,
+          ...doc.data()
+        });
+        // console.log(doc.id+':', doc.data())
+      });
     } catch (err) {
       console.log(err);
     } finally {
       loadingDocuments.value = false
+      // console.log(documents.value)
     }
   };
   //solicitud a la base da datos
@@ -105,6 +107,7 @@ export const useDataBase = defineStore("dataBase", () => {
         name : name
       });
       documents.value = documents.value.map((item) => item.id === id ? ({...item, name: name}) : item)
+      router.push('/')
     } catch (error) {
       console.log(error)
     }finally{
@@ -122,4 +125,4 @@ export const useDataBase = defineStore("dataBase", () => {
   };
 });
 const store = createPinia();
-store.use(storeReset); 
+store.use(storeReset);  

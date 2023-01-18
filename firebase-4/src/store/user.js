@@ -23,7 +23,8 @@ export const userStore = defineStore('counter',()=>{
             // console.log(userData)
             router.push('/') //Para mayorr comodidad forzamos las rutas en pinia
         }catch(err){
-            console.log(err)
+            console.log(err.code)
+            return err.code
         }finally{
             loadinUser.value= false
         }
@@ -35,7 +36,8 @@ export const userStore = defineStore('counter',()=>{
             const {user} = await signInWithEmailAndPassword(auth,email,password)
             router.push('/')
         }catch(err) {
-            console.log(err)
+            console.log(err.code)
+            return err.code
         }finally{
             loadinUser.value = false
         }
@@ -43,14 +45,17 @@ export const userStore = defineStore('counter',()=>{
     //Cerramos sesion
     const logOutUser = async () =>{
         const dataBaseStore = useDataBase() //Inicializamos store1
-        dataBaseStore.$reset() //reseteamos la store1
-        console.log(dataBaseStore.documents)
+        // console.log(dataBaseStore.documents)
+        
+        // console.log(dataBaseStore.documents)
         try {
             await signOut(auth)
             router.push('/login')
-            userData.value = null
         } catch (err) {
             console.log(err)
+        }finally{
+            userData.value = null
+            dataBaseStore.$reset() //reseteamos la store1
         }
     }
     //
@@ -63,7 +68,7 @@ export const userStore = defineStore('counter',()=>{
                     userData.value = {email: user.email, uid : user.uid}
                 }else{
                     userData.value = null
-                    const dataBaseStore = useDataBase() 
+                    const dataBaseStore = useDataBase()     
                     dataBaseStore.$reset() 
                 }
                 res(user)
