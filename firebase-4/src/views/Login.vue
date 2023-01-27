@@ -2,7 +2,7 @@
 import { ref, reactive } from "vue";
 import { userStore } from "../store/user";
 import { storeToRefs } from "pinia";
-import { message } from "ant-design-vue"; //importacion de message de ant-desing-vue
+import { message } from "ant-design-vue"; 
 
 const email = ref("");
 const password = ref("");
@@ -13,9 +13,6 @@ const formState = reactive({
   email: "jonathan@test.com",
   password: "123456",
 });
-// const handelSubmit = async () => {
-//     await loginUser(formState.email, formState.password);
-// };
 
 const onFinished = async (values) => {
   console.log("succes:", values);
@@ -44,7 +41,6 @@ const onFinishedFailed = (errorInfo) => {
   <section>
     <a-row>
       <a-col span="12" offset="6">
-        <!--@submit.prevent="handelSubmit"-->
         <a-form
           name="login"
           layout="vertical"

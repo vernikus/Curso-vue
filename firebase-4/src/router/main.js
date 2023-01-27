@@ -47,6 +47,12 @@ const router = createRouter({
       component: () => import("../views/Edit.vue"),
       beforeEnter: requireAuth
     },
+    {
+      path: "/perfil/",
+      name: "perfil",
+      component: () => import("../views/Perfil.vue"),
+      beforeEnter: requireAuth
+    },
   ],
 });
 

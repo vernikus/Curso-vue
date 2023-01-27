@@ -10,14 +10,12 @@ const route = useRoute()
 const selectedKeys = ref([])
 
 
-// watch recibe como primer parametro una funcion de observador con el dato del cual se quiere estar al pendiente cuento este cambie
 watch(() => route.name, () => {
   selectedKeys.value = [route.name]
 })
 </script>
 
 <template>
-  <!-- Si el lodaer es verdadero se mostrara el nav y el router-view -->
   <a-layout>
     <a-layout-header v-if="loader"> 
       <a-menu v-model:selectedKeys="selectedKeys"
@@ -32,6 +30,9 @@ watch(() => route.name, () => {
         </a-menu-item>
         <a-menu-item v-if="!userData" key="login">
           <RouterLink type="primary" to="/login" >Login</RouterLink>
+        </a-menu-item>
+        <a-menu-item v-if="userData" key="perfil">
+          <RouterLink type="primary" to="/perfil" >Perfil</RouterLink>
         </a-menu-item>
         <a-menu-item type="danger" @click="logOutUser" v-if="userData" key="logout">Logout</a-menu-item>
       </a-menu>

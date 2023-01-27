@@ -9,17 +9,6 @@ const { registerUser } = user;
 const { loadinUser } = storeToRefs(user);
 const router = useRouter();
 
-// Se hace una pequeña validacion
-// const handelSubmit = async () =>{
-//     if(!email.value || password.value.length < 5){
-//         return alert('please fill in the fields')
-//     }else{
-//         await registerUser(email.value,password.value)
-//         // router.push('/')  //Forzamos la ruta al terminar la peticion
-//         console.log('processing infotmation')
-//     }
-// }
-
 const formState = reactive({
   email: "fatima@test.com",
   password: "123456",
@@ -68,7 +57,6 @@ const validatorPassword = async (_rule, value) => {
   <section>
     <a-row>
       <a-col span="12" offset="6">
-        <!--@submit.prevent="handelSubmit"-->
         <a-form
           name="login"
           layout="vertical"

@@ -8,10 +8,6 @@ const route = useRoute();
 const dataBase = useDataBase();
 const { readUrl, updateUrl } = dataBase;
 
-// const handelSubmit = () =>{
-//     updateUrl(route.params.id, url.value)
-// }
-
 const formState = reactive({
     url: "",
 });
@@ -26,13 +22,6 @@ onMounted(async () => {
 </script>
 
 <template>
-  <!-- <section>
-        <h1>Edit</h1>
-        <form @submit.prevent="handelSubmit">
-            <input type="text" placeholder="https://example.com" v-model="url">
-            <button type="submit">Edit</button>
-        </form>
-    </section> -->
     <h1>Edit: {{ route.params.id }}</h1>
     <a-form
     name="editForm"
@@ -49,7 +38,7 @@ onMounted(async () => {
         required: true,
         whitespace: true,
         pattern: /^https?:\/\/[\w\-]+(\.[\w\-]+)+[/#?]?.*$/,
-        //  message: 'Add a valid url',
+        message: 'Add a valid url',
         }]"
         >
             <a-input v-model:value="formState.url"></a-input>
