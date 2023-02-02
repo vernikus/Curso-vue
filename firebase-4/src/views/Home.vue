@@ -20,6 +20,22 @@ const confirm = async (id) => {
 const cancel =  () => {
     message.error('It was not deleted')
 }
+
+const copy = (id) =>{
+  if(!navigator.clipboard){
+    return message.error('Could not copy')
+  }
+  
+
+  const path = `${window.location.origin}/${id}`
+  navigator.clipboard.writeText(path)
+    .then(() =>{
+      message.success('Text copied to clipboard')
+    })
+    .catch(err =>{
+      message.error('Coudl not copy',err)
+    })
+}
 getUrls();
 </script>
 
@@ -54,6 +70,7 @@ getUrls();
             <a-button type="primary" @click="router.push(`/edit/${item.id}`)"
               >Edit</a-button
             >
+            <a-button type="primary" @click="copy(item.id)">Copy</a-button>
           </a-space>
         </template>
         <p>{{ item.name }}</p>

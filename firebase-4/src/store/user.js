@@ -5,11 +5,13 @@ import {
   onAuthStateChanged,
   signInWithEmailAndPassword,
   signOut,
+  updateProfile,
 } from "firebase/auth";
-import { auth, db } from "../firebaseConfig.js";
+import { auth, db, storage } from "../firebaseConfig.js";
 import router from "../router/main";
 import { useDataBase } from "./dataBase.js";
 import { doc,getDoc, setDoc } from "firebase/firestore/lite";
+
 
 export const userStore = defineStore("counter", () => {
   const userData = ref(null);
@@ -35,23 +37,17 @@ export const userStore = defineStore("counter", () => {
   const setUser = async (user) =>{
     try{
       const userRef = doc(db,'users',user.uid)
-      const docSpan = await getDoc(userRef)
-      if(docSpan.exists()){
-        userData.value = {...docSpan.data()}
-      }else{
-        await setDoc(userRef,{
-          email: user.email,
-          uid: user.uid,
-          displayName: user.displayName,
-          photoURL: user.photoURL
-        })
-        userData.value = {
-          email: user.email,
-          uid: user.uid,
-          displayName: user.displayName,
-          photoURL: user.photoURL
-        }
+
+      userData.value = {
+        email: user.email,
+        uid: user.uid,
+        displayName: user.displayName,
+        photoURL: user.photoURL
       }
+      
+      await setDoc(userRef,userData.value)
+
+     
     }catch(err){
       console.log(err)
     }
@@ -59,7 +55,8 @@ export const userStore = defineStore("counter", () => {
   const loginUser = async (email, password) => {
     try {
       loadinUser.value = true;
-      await signInWithEmailAndPassword(auth, email, password);
+      const {user} = await signInWithEmailAndPassword(auth, email, password);
+      await setUser(user)
       router.push("/");
     } catch (err) {
       console.log(err.code);
@@ -71,12 +68,11 @@ export const userStore = defineStore("counter", () => {
   const logOutUser = async () => {
     const dataBaseStore = useDataBase();
     try {
+      router.push("/login");    
       await signOut(auth);
-      router.push("/login");
     } catch (err) {
       console.log(err);
     } finally {
-      userData.value = null;
       dataBaseStore.$reset();
     }
   };
@@ -86,12 +82,18 @@ export const userStore = defineStore("counter", () => {
         auth,
         async (user) => {
           if (user) {
-            await setUser(user)
+            // await setUser(user)
+            userData.value = {
+              email: user.email,
+              uid: user.uid,
+              displayName: user.displayName,
+              photoURL: user.photoURL
+            };
           } else {
             userData.value = null;
             const dataBaseStore = useDataBase();
             dataBaseStore.$reset();
-          }
+          };
           res(user);
         },
         (e) => rej(e)
@@ -99,6 +101,17 @@ export const userStore = defineStore("counter", () => {
       unsuscribe();
     });
   };
+  const updateUser = async (displayName) =>{
+    try {
+      await updateProfile(auth.currentUser,{
+        displayName,
+      })
+      setUser(auth.currentUser)
+    } catch (error) {
+      console.log(error)
+      return error.code
+    }
+  }
   return {
     loadinUser,
     userData,
@@ -107,5 +120,7 @@ export const userStore = defineStore("counter", () => {
     loginUser,
     logOutUser,
     currentUser,
+    updateUser,
+    setUser
   };
 });

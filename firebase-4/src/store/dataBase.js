@@ -9,6 +9,7 @@ import {
   getDoc,
   getDocs,
   query,
+  setDoc,
   updateDoc,
   where,
 } from "firebase/firestore/lite";
@@ -50,10 +51,10 @@ export const useDataBase = defineStore("dataBase", () => {
         short: nanoid(6),
         user: auth.currentUser.uid,
       };
-      const getRef = await addDoc(collection(db, "urls"), objectDoc);
+      await setDoc(doc(db, "urls",objectDoc.short), objectDoc);
       documents.value.push({
         ...objectDoc,
-        id: getRef.id,
+        id: objectDoc.short,
       });
     } catch (error) {
       console.log(error);
@@ -113,6 +114,20 @@ export const useDataBase = defineStore("dataBase", () => {
     } finally {
     }
   };
+  const getURL = async (id) =>{
+    try {
+      const docRef = doc(db, "urls", id);
+      const docSnap = await getDoc(docRef);
+
+      if (!docSnap.exists()) {
+        return false
+      }
+
+      return docSnap.data().name;
+    } catch (error) {
+      console.log(error);
+    }
+  }
   return {
     documents,
     getUrls,
@@ -121,6 +136,7 @@ export const useDataBase = defineStore("dataBase", () => {
     deleteUrl,
     readUrl,
     updateUrl,
+    getURL,
   };
 });
 const store = createPinia();

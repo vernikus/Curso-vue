@@ -4,6 +4,7 @@ import { createRouter, createWebHistory } from "vue-router";
 import { userStore } from "../store/user";
 import Home from "../views/Home.vue";
 
+import { useDataBase } from "../store/dataBase";
 const requireAuth = async (to, from, next) => {
     // Se recomienda inicializar las importaciones de pinia dentro de una funcion y no direcctamente en el archivo
   const userStor = userStore();
@@ -22,6 +23,17 @@ const requireAuth = async (to, from, next) => {
   loader.value = true;
 };
 
+const redirection = async(to,from,next) =>{
+  const dataBase = useDataBase()
+  const name = await dataBase.getURL(to.params.pathMatch[0])
+  if(!name){
+    next()
+  }else{
+    window.location.href = name
+    next()
+  }
+
+}
 const router = createRouter({
   history: createWebHistory(),
   routes: [
@@ -52,6 +64,12 @@ const router = createRouter({
       name: "perfil",
       component: () => import("../views/Perfil.vue"),
       beforeEnter: requireAuth
+    },
+    {
+      path: "/:pathMatch(.*)*",
+      name: "404",
+      component: () => import("../views/NotFound.vue"),
+      beforeEnter: redirection
     },
   ],
 });
